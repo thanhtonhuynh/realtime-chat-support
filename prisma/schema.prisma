@@ -9,46 +9,29 @@ datasource db {
 }
 
 model User {
-  id            String  @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String
-  username      String  @unique
-  email         String  @unique
-  emailVerified Boolean @default(false)
-  role          String  @default("user")
-  accountStatus String  @default("active")
+  username      String    @unique
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  role          String    @default("user")
+  accountStatus String    @default("active")
   passwordHash  String?
   image         String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  sessions                 Session[]
-  emailVerificationRequest EmailVerificationRequest?
-  passwordResetTokens      PasswordResetToken[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
 }
 
 model Session {
   id        String   @id
   userId    String
   expiresAt DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model EmailVerificationRequest {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  code      String
-  email     String
-  expiresAt DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model PasswordResetToken {
-  tokenHash String   @id
-  userId    String   @unique
-  expiresAt DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Post {
+  id        String   @id @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title     String
+  createdAt DateTime @default(now())
 }

@@ -2,6 +2,8 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { TailwindScreenSizeIndicator } from "@/components/TailwindScreenSizeIndicator";
 import { Toaster } from "@/components/ui/sonner";
+import { getCurrentSession } from "@/lib/auth/session";
+import { SessionProvider } from "@/providers/SessionProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -27,19 +29,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = getCurrentSession();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} font-geist-sans antialiased`}>
         <ThemeProvider>
-          <Header />
+          <SessionProvider sessionPromise={session}>
+            <Header />
 
-          <div className="relative mx-auto flex min-h-screen w-full max-w-screen-2xl flex-col bg-background">
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
+            <div className="relative mx-auto flex min-h-screen w-full max-w-screen-2xl flex-col bg-background">
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
 
-          <Toaster closeButton duration={10000} />
-          <TailwindScreenSizeIndicator />
+            <Toaster closeButton duration={10000} />
+            <TailwindScreenSizeIndicator />
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>
