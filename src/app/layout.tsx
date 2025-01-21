@@ -38,8 +38,8 @@ export default function RootLayout({
           <SessionProvider sessionPromise={session}>
             <Header />
 
-            <div className="relative mx-auto flex min-h-screen w-full max-w-screen-2xl flex-col bg-background">
-              <main className="flex-1">{children}</main>
+            <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-screen-2xl flex-col bg-background">
+              <main className="flex flex-1 flex-col">{children}</main>
               <Footer />
             </div>
 
