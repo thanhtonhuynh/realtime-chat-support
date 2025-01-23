@@ -2,6 +2,7 @@
 
 import { supabase } from "@/lib/supabase";
 import { useConversation } from "@/providers/conversation-provider";
+import { useSession } from "@/providers/SessionProvider";
 import { ReshapedConversation } from "@/types";
 import { useEffect, useState } from "react";
 import { ConversationItem } from "./conversation-item";
@@ -11,6 +12,7 @@ type ConversationListProps = {
 };
 
 export function ConversationList({ initialConversations }: ConversationListProps) {
+  const { user } = useSession();
   const [conversations, setConversations] = useState<ReshapedConversation[]>(initialConversations);
   const { inputRef, selectedConvoId } = useConversation();
 
@@ -20,28 +22,33 @@ export function ConversationList({ initialConversations }: ConversationListProps
       .on("broadcast", { event: "conversation:new" }, ({ payload }) => {
         setConversations((prev) => [payload.conversation, ...prev]);
       })
-      .on("broadcast", { event: "conversation:update" }, async ({ payload }) => {
+      .on("broadcast", { event: "conversation:update" }, ({ payload }) => {
         setConversations((prev) => {
           const updatedConversations = prev.map((c) => {
             if (c.id === payload.conversation.id) {
               if (
-                selectedConvoId === payload.conversation.id &&
-                inputRef.current === document.activeElement
+                (selectedConvoId === payload.conversation.id &&
+                  inputRef.current === document.activeElement) ||
+                payload.conversation.latestMessage.senderId === user?.id
               ) {
                 return {
                   ...c,
-                  latestMessage: { ...payload.conversation.latestMessage, isRead: true },
+                  latestMessage: payload.conversation.latestMessage,
                 };
               }
-              return { ...c, latestMessage: payload.conversation.latestMessage };
+              return {
+                ...c,
+                latestMessage: payload.conversation.latestMessage,
+                unreadMessagesCount: c.unreadMessagesCount + 1,
+              };
             }
             return c;
           });
 
+          // Move the updated conversation to the top
           const updatedConversation = updatedConversations.find(
             (c) => c.id === payload.conversation.id,
           );
-
           if (!updatedConversation) return prev;
           return [
             updatedConversation,
@@ -49,17 +56,12 @@ export function ConversationList({ initialConversations }: ConversationListProps
           ];
         });
       })
-      .on("broadcast", { event: "conversation:message-read" }, async ({ payload }) => {
+      .on("broadcast", { event: "conversation:message-read" }, ({ payload }) => {
         setConversations((prev) =>
-          prev.map((c) => {
-            if (c.id === payload.conversation.id) {
-              return { ...c, latestMessage: { ...c.latestMessage, isRead: true } };
-            }
-            return c;
-          }),
+          prev.map((c) =>
+            c.id === payload.conversation.id ? { ...c, unreadMessagesCount: 0 } : c,
+          ),
         );
-
-        // await markLastMessageRead(payload.conversation.id);
       })
       .subscribe();
 

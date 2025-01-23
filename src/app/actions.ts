@@ -36,22 +36,16 @@ export async function createMessage(
   });
 }
 
-export async function markLastMessageRead(conversationId: string) {
+export async function markMessagesAsReadAction(conversationId: string) {
   const { user } = await getCurrentSession();
   if (!user) throw new Error("User not found");
 
-  const message = await prisma.message.findFirst({
+  return await prisma.message.updateMany({
     where: {
       conversationId,
       senderId: { not: user.id },
+      isRead: false,
     },
-    orderBy: { createdAt: "desc" },
-  });
-
-  if (!message) return;
-
-  return await prisma.message.update({
-    where: { id: message.id },
     data: { isRead: true },
   });
 }

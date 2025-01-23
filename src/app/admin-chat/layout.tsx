@@ -1,4 +1,4 @@
-import { getConversations } from "@/data-access/conversation";
+import { getAdminConversations } from "@/data-access/conversation";
 import { ConversationProvider } from "@/providers/conversation-provider";
 import { AdminConversation, ReshapedConversation } from "@/types";
 import Link from "next/link";
@@ -8,13 +8,14 @@ function reshapeConversations(conversations: AdminConversation[]): ReshapedConve
   return conversations.map((conversation) => ({
     id: conversation.id,
     createdAt: conversation.createdAt,
-    latestMessage: conversation.messages[0],
-    customerName: conversation.customer.name,
+    customer: { name: conversation.customer.name },
+    unreadMessagesCount: conversation._count.messages,
+    latestMessage: conversation.messages[0] || null,
   }));
 }
 
 export default async function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const conversations = await getConversations();
+  const conversations = await getAdminConversations();
   const reshapedConversations = reshapeConversations(conversations);
 
   return (

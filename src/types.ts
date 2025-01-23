@@ -9,15 +9,31 @@ export type MessageWithSender = Prisma.MessageGetPayload<{
 }>;
 
 export type AdminConversation = Prisma.ConversationGetPayload<{
-  include: {
+  select: {
+    id: true;
+    createdAt: true;
     customer: { select: { name: true } };
-    messages: { take: 1; orderBy: { createdAt: "desc" } };
+    messages: {
+      take: 1;
+      orderBy: { createdAt: "desc" };
+    };
+    _count: {
+      select: {
+        messages: {
+          where: {
+            senderId: { not: string };
+            isRead: boolean;
+          };
+        };
+      };
+    };
   };
 }>;
 
 export type ReshapedConversation = {
   id: string;
   createdAt: Date;
-  customerName: string;
-  latestMessage: Message;
+  customer: { name: string };
+  unreadMessagesCount: number;
+  latestMessage: Message | null;
 };

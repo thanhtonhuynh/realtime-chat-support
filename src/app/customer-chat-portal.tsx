@@ -1,7 +1,7 @@
 import { getCurrentSession } from "@/lib/auth/session";
 import prisma from "@/lib/prisma";
 import { MessageWithSender } from "@/types";
-import { ChatWindow } from "./chat-window";
+import { CustomerChatWindow } from "./customer-chat-window";
 
 async function fetchConversation(userId: string) {
   return await prisma.conversation.findUnique({
@@ -23,7 +23,11 @@ async function fetchMessages(conversationId: string | undefined) {
   return messages;
 }
 
-export async function ChatPortal() {
+function getUnreadMessagesCount(messages: MessageWithSender[], userId: string) {
+  return messages.filter((m) => m.senderId !== userId && !m.isRead).length;
+}
+
+export async function CustomerChatPortal() {
   const { user } = await getCurrentSession();
   if (!user) return null;
 
@@ -33,5 +37,13 @@ export async function ChatPortal() {
     messages = await fetchMessages(conversation.id);
   }
 
-  return <ChatWindow serverConversation={conversation} serverMessages={messages} />;
+  const unreadMessagesCount = getUnreadMessagesCount(messages, user.id);
+
+  return (
+    <CustomerChatWindow
+      initialConversation={conversation}
+      initialMessages={messages}
+      initialUnreadMessagesCount={unreadMessagesCount}
+    />
+  );
 }

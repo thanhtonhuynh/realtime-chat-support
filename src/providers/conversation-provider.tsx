@@ -11,7 +11,7 @@ type ConversationContext = {
 const ConversationContext = createContext({} as ConversationContext);
 
 export const ConversationProvider = ({ children }: { children: React.ReactNode }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const [selectedConvoId, setSelectedConvoId] = useState<string | null>(null);
 
   return (
