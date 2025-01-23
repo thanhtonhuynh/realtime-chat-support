@@ -10,7 +10,7 @@ export function Messages({ messages, user }: { messages: MessageWithSender[]; us
     // <div className="flex flex-1 flex-col justify-end">
     <main className="flex flex-1 flex-col overflow-y-auto">
       <div className="flex flex-1 flex-col-reverse overflow-y-auto">
-        <ul className="my-4 flex flex-col px-2">
+        <ul className="mt-4 flex flex-col px-2">
           {messages.map((message, i) => (
             <li
               key={i}
