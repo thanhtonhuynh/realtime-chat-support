@@ -18,7 +18,7 @@ export function ChatFooter({
   markMessagesAsRead,
 }: ChatFooterProps) {
   return (
-    <footer className="mt-4 flex items-center space-x-2 p-2 px-6">
+    <footer className="flex items-center space-x-2 border-t p-2 px-6">
       <Input
         ref={inputRef}
         autoFocus
@@ -37,8 +37,9 @@ export function ChatFooter({
 
       <Button
         size="sm"
-        className="rounded-full bg-blue-600 shadow-md hover:bg-blue-600/90"
+        className="rounded-full bg-blue-600 shadow-md transition-all hover:bg-blue-600/90 disabled:bg-muted-foreground"
         onClick={sendMessage}
+        disabled={!message}
       >
         Send
       </Button>

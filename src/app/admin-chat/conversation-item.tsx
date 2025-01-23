@@ -19,11 +19,10 @@ export function ConversationItem({ conversation }: ConversationItemProps) {
 
   return (
     <Link
-      prefetch={false}
       href={`/admin-chat/${conversation.id}`}
       className={cn(
         "relative cursor-pointer rounded-xl p-2",
-        params.conversationId === conversation.id ? "bg-blue-50" : "hover:bg-muted",
+        params.conversationId === conversation.id ? "bg-primary/10" : "hover:bg-muted",
       )}
     >
       {hasNewMessages && (

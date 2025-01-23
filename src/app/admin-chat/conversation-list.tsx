@@ -72,9 +72,12 @@ export function ConversationList({ initialConversations }: ConversationListProps
 
   return (
     <div className="flex flex-col gap-1 overflow-y-auto">
-      {conversations.map((conversation) => (
-        <ConversationItem key={conversation.id} conversation={conversation} />
-      ))}
+      {conversations.map(
+        (conversation) =>
+          conversation.latestMessage && (
+            <ConversationItem key={conversation.id} conversation={conversation} />
+          ),
+      )}
     </div>
   );
 }

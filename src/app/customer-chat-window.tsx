@@ -84,8 +84,9 @@ export function CustomerChatWindow({
           conversation: {
             id: newConvo.id,
             createdAt: newConvo.createdAt,
-            customerName: user.name,
-            messages: [],
+            customer: { name: user.name },
+            unreadMessagesCount: 0,
+            latestMessage: null,
           },
         },
       });
